@@ -1,0 +1,25 @@
+name: Merge Permission Workflow
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if specific label is added
+        if: ${{ github.event.label.name == 'merge' }}
+        run: |
+          echo "Label 'merge' added to pull request"
+          # Perform actions to grant merge permission, for example:
+          # Uncomment the line below to allow merging the pull request
+          echo "::set-output name=allow_merge::true"
+      
+      - name: Allow merge if label is added
+        if: ${{ steps.check-label.outputs.allow_merge == 'true' }}
+        run: |
+          echo "Allowing merge for pull request"
+          # Uncomment the line below to allow merging the pull request using GitHub token
+          gh pr merge ${{ github.event.pull_request.number }} --auto
